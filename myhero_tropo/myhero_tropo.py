@@ -1,4 +1,28 @@
-from flask import Flask, request, Response
+#! /usr/bin/python
+'''
+    Tropo WebAPI Endpoint for Simple Superhero Voting Application
+
+    This is a WebAPI Service for Cisco Tropo to respond to Text or Voice based
+    interaction withe the MyHero Application.  Users can
+    check current standings, list the available options, and place a vote.
+
+    This is the an example Service for a basic microservice demo application.
+    The application was designed to provide a simple demo for Cisco Mantl
+
+    There are several pieces of information needed to run this application.  It is
+    suggested to set them as OS Environment Variables.  Here is an example on how to
+    set them:
+
+    # Address and key for app server
+    export myhero_app_server=http://myhero-app.mantl.domain.com
+    export myhero_app_key=DemoAppKey
+
+'''
+
+__author__ = 'hapresto'
+
+
+# from flask import Flask, request, Response
 import requests, json, re
 from itty import *
 
