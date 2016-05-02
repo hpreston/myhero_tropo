@@ -23,29 +23,28 @@ def index(request):
 
 
     # Check if message contains word "results" and if so send results
-    if message["text"].lower().find("results") > -1:
+    if message.lower().find("results") > -1:
         results = get_results()
         reply = "The current standings are\n"
         for result in results:
             reply += "  - %s has %s votes.\n" % (result[0], result[1])
     # Check if message contains word "options" and if so send options
-    elif message["text"].lower().find("options") > -1:
+    elif message.lower().find("options") > -1:
         options = get_options()
         reply = "The options are... \n"
         for option in options:
             reply += "  - %s \n" % (option)
     # Check if message contains word "vote" and if so start a voting session
-    # elif message["text"].lower().find("vote") > -1:
-    #     reply = "Let's vote!  Look for a new message from me so you can place a secure vote!"
-    #     start_vote_session(message["personEmail"])
-    # Check if message contains phrase "add email" and if so add user to room
+    elif message.lower().find("vote") > -1:
+        # reply = "Let's vote!  Look for a new message from me so you can place a secure vote!"
+        reply = process_incoming_message(message)
     # If nothing matches, send instructions
     else:
         # Reply back to message
         reply = "Hello, welcome to the MyHero Demo Room.\n" \
                 "To find out current status of voting, ask 'What are the results?'\n" \
                 "To find out the possible options, ask 'What are the options?\n" \
-                '''To place a vote, say "I'd like to vote" to start a private voting session.'''
+                '''To place a vote, simply type the name of your favorite Super Hero and the word "vote".'''
 
 
 
@@ -72,6 +71,30 @@ def place_vote(vote):
     page = requests.post(u, headers=app_headers)
     return page.json()
 
+# Figure out who to vote for
+def process_incoming_message(message):
+    # What to do...
+    # 1.  Get Possible Options
+    # 2.  See if the message contains one of the options
+    # 3.  Cast vote for option
+    # 4.  Thank the user for their vote
+    # 5.  Delete Webhook
+
+    options = get_options()
+    chosen_hero = ""
+    for option in options:
+        if message.lower().find(option.lower()) > -1:
+            pprint("Found a vote for: " + option)
+            chosen_hero = option
+            break
+
+    # Cast Vote
+    if chosen_hero != "":
+        vote = place_vote(chosen_hero)
+        msg = "Thanks for your vote for %s.  Your vote has been recorded and this ends this voting session." % (chosen_hero)
+    else:
+        msg = "I didn't understand your vote, please type the name of your chosen hero exactly as listed on the ballot.  "
+    return msg
 
 
 if __name__ == '__main__':
