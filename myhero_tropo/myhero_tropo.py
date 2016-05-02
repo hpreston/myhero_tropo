@@ -25,31 +25,33 @@ def index(request):
     # Check if message contains word "results" and if so send results
     if message.lower().find("results") > -1:
         results = get_results()
-        reply = "The current standings are\n"
+        reply = ["The current standings are"]
         for result in results:
-            reply += "  - %s has %s votes.\n" % (result[0], result[1])
+            reply.append("  - %s has %s votes.\n" % (result[0], result[1]))
     # Check if message contains word "options" and if so send options
     elif message.lower().find("options") > -1:
         options = get_options()
-        reply = "The options are... \n"
+        reply = ["The options are..."]
         for option in options:
-            reply += "  - %s \n" % (option)
+            reply.append("  - %s \n" % (option))
     # Check if message contains word "vote" and if so start a voting session
     elif message.lower().find("vote") > -1:
         # reply = "Let's vote!  Look for a new message from me so you can place a secure vote!"
-        reply = process_incoming_message(message)
+        reply = [process_incoming_message(message)]
     # If nothing matches, send instructions
     else:
         # Reply back to message
-        reply = "Hello, welcome to the MyHero Demo Room.\n" \
-                "To find out current status of voting, ask 'What are the results?'\n" \
-                "To find out the possible options, ask 'What are the options?\n" \
-                '''To place a vote, simply type the name of your favorite Super Hero and the word "vote".'''
-
-
+        # reply = "Hello, welcome to the MyHero Demo Room.\n" \
+        #         "To find out current status of voting, ask 'What are the results?'\n" \
+        #         "To find out the possible options, ask 'What are the options?\n" \
+        #         '''To place a vote, simply type the name of your favorite Super Hero and the word "vote".'''
+        reply = ["Hello, welcome to the MyHero Demo Room." ,
+                "To find out current status of voting, ask 'What are the results?'",
+                "To find out the possible options, ask 'What are the options?",
+                '''To place a vote, simply type the name of your favorite Super Hero and the word "vote".''']
 
     # t.say(["Really, it's that easy." + message])
-    t.say([reply])
+    t.say(reply)
     return t.RenderJson()
 
 # Utilities to interact with the MyHero-App Server
