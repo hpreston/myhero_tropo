@@ -11,7 +11,7 @@ app_headers["Content-type"] = "application/json"
 
 
 @app.route('/', methods=["POST"])
-def index(request):
+def index():
     t = Tropo()
     t.say("Welcome to Tropo!")
     return t.RenderJson()
@@ -60,13 +60,13 @@ if __name__ == '__main__':
     # print "App Server Key: " + app_key
     sys.stderr.write("App Server Key: " + app_key + "\n")
 
-    secret_key = args.secret
-    if (secret_key == None):
-        secret_key = os.getenv("myhero_spark_bot_secret")
-        if (secret_key == None):
-            get_secret_key = raw_input("What is the Authorization Key to Require? ")
-            secret_key = get_secret_key
-    sys.stderr.write("Secret Key: " + secret_key + "\n")
+    # secret_key = args.secret
+    # if (secret_key == None):
+    #     secret_key = os.getenv("myhero_spark_bot_secret")
+    #     if (secret_key == None):
+    #         get_secret_key = raw_input("What is the Authorization Key to Require? ")
+    #         secret_key = get_secret_key
+    # sys.stderr.write("Secret Key: " + secret_key + "\n")
 
 
     # Set Authorization Details for external requests
