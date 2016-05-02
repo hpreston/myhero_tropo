@@ -1,0 +1,4 @@
+requests
+tropo-webapi-python
+flask
+argparse
