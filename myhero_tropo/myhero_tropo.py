@@ -1,20 +1,48 @@
 from flask import Flask, request, Response
 import requests, json, re
+from itty import *
 
-from tropo import Tropo
+from tropo import Tropo, Session
 
-app = Flask(__name__)
+# app = Flask(__name__)
 
 
 app_headers = {}
 app_headers["Content-type"] = "application/json"
 
 
-@app.route('/', methods=["POST"])
-def index():
+# @app.route('/', methods=["POST"])
+@post('/index.json')
+def index(request):
     t = Tropo()
-    t.say("Welcome to Tropo!")
+
+    # s = Session(request.get_json(force=True))
+    s = Session(request.body)
+    initialText = s.initialText
+    # print("Initial Text: " + initialText)
+
+    t.say(["Really, it's that easy." + initialText])
     return t.RenderJson()
+
+# Utilities to interact with the MyHero-App Server
+def get_results():
+    u = app_server + "/results"
+    page = requests.get(u, headers = app_headers)
+    tally = page.json()
+    tally = sorted(tally.items(), key = lambda (k,v): v, reverse=True)
+    return tally
+
+def get_options():
+    u = app_server + "/options"
+    page = requests.get(u, headers=app_headers)
+    options = page.json()["options"]
+    return options
+
+def place_vote(vote):
+    u = app_server + "/vote/" + vote
+    page = requests.post(u, headers=app_headers)
+    return page.json()
+
 
 
 if __name__ == '__main__':
@@ -72,4 +100,5 @@ if __name__ == '__main__':
     # Set Authorization Details for external requests
     app_headers["key"] = app_key
 
-    app.run(debug=True, host='0.0.0.0', port=int("5000"))
+    # app.run(debug=True, host='0.0.0.0', port=int("5000"))
+    run_itty(server='wsgiref', host='0.0.0.0', port=5000)
