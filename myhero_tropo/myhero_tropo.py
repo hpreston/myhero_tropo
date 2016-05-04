@@ -16,13 +16,18 @@
     # Address and key for app server
     export myhero_app_server=http://myhero-app.mantl.domain.com
     export myhero_app_key=DemoAppKey
-
+    export myhero_tropo_secret=DevTropo
+    export myhero_tropo_user=tropouser
+    export myhero_tropo_pass=tropopass
+    export myhero_tropo_prefix=1419
+    export myhero_tropo_url=http://localhost:5000
 '''
 
 __author__ = 'hapresto'
 
 # Todo - Convert back to flask "json.dumps(page.json)"
 # Todo - Add in Auth Code for API calls
+# Todo - Setup Local Development Environment Details in README
 
 # from flask import Flask, request, Response
 import requests, json, re
@@ -359,8 +364,6 @@ if __name__ == '__main__':
         demoappprefix = address["prefix"]
 
     pprint("Tropo Number: " + demoappnumber)
-
-
 
     # app.run(debug=True, host='0.0.0.0', port=int("5000"))
     run_itty(server='wsgiref', host='0.0.0.0', port=5000)

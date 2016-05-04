@@ -24,12 +24,15 @@ The docker containers are available at
 * Spark Bot - [hpreston/myhero_spark](https://hub.docker.com/r/hpreston/myhero_spark)
 * Tropo WebAPI - [hpreston/myhero_tropo](https://hub.docker.com/r/hpreston/myhero_tropo)
 
-# Tropo Account Requirement
-**EDIT NEEDED**
-
-In order to use this service, you will need a Cisco Tropo Account to use.
+## Cisco Tropo Account Requirement
+In order to use this service, you will need a Cisco Tropo Account deploy the service.
 
 Creating an account is free and only requires a working email account.  Visit [http://www.tropo.com](http://www.tropo.com) to signup for an account.
+
+Developer usage of Tropo is also free and information is available at [http://www.tropo.com](http://www.tropo.com).
+
+In order to build the Tropo Application, this application needs the Username and Password for your Tropo Account.
+
 
 ## Basic Application Details
 **EDIT NEEDED**
@@ -37,9 +40,12 @@ Creating an account is free and only requires a working email account.  Visit [h
 
 Required
 
-* flask
-* ArgumentParser
 * requests
+* tropo-webapi-python
+* flask
+* argparse
+* itty
+
 
 # Environment Installation
 
@@ -50,13 +56,23 @@ Required
 In order to run, the service needs several pieces of information to be provided:
 * App Server Address
 * App Server Authentication Key to Use
+* Secret Key to require for local API Calls
+* Tropo Username
+* Tropo Password
+* Tropo Phone Number Prefix
+* Tropo Service URL
 
 These details can be provided in one of three ways.
 * As a command line argument
-  - `python myhero_tropo/myhero_tropo.py --app "http://myhero-app.server.com" --appkey "APP AUTH KEY"`
+  - `python myhero_tropo/myhero_tropo.py --app "http://myhero-app.server.com" --appkey "APP AUTH KEY" --secret "TROPO KEY" --tropouser "tuser" --tropopassword "tpass" --tropoprefix "1419" --tropourl "http://localhost:5000" `
 * As environment variables
   - `export myhero_app_server=http://myhero-app.server.com`
   - `export myhero_app_key=APP AUTH KEY`
+  - `export myhero_tropo_secret=TROPO KEY`
+  - `export myhero_tropo_user=tuser`
+  - `export myhero_tropo_pass=tpass`
+  - `export myhero_tropo_prefix=1419`
+  - `export myhero_tropo_url=http://localhost:5000`
   - `python myhero_tropo/myhero_tropo.py`
 
 * As raw input when the application is run
@@ -67,23 +83,30 @@ These details can be provided in one of three ways.
 A command line argument overrides an environment variable, and raw input is only used if neither of the other two options provide needed details.
 
 # Accessing
-**EDIT NEEDED**
+
+* At first run, the tropo service will create a new Tropo Applciation called "myherodemo".  You can use log into the Tropo interface to verify this application and details.
+* The service has API endpoints to return details about the Tropo Application.
+  * Execute this curl command to get details on the Tropo Application
+  * `curl -H "key: TROPO KEY" http://localhost:5000/application`
+  * Execute this curl command to get the phone number assigned to the Tropo Application
+  * `curl -H "key: TROPO KEY" http://localhost:5000/application/number`
 
 
-## Interacting with the Tropo Interface
-**EDIT NEEDED**
+## Interacting with the Tropo Application
+The Tropo Application is a very simple interface that is designed to make it intuitive to use.  Once in the room, simply say "hello", "help" (or anything else) to have the bot reply back with some instructions on how to access the features.
 
-The Tropo Interface is a very simple interface that is designed to make it intuitive to use.  Once in the room, simply say "hello", "help" (or anything else) to have the bot reply back with some instructions on how to access the features.
+Start by sending a TXT (SMS) message to the phone number assigned to the application.
+* This number can be found in the Tropo Web Portal or with this command
+  * `curl -H "key: SecureTropo" http://myhero-tropo.$MANTL_DOMAIN/application/number`
 
-The servie is deisgned to look for key words to act on, and provide the basic help message for anything else.  The key words are:
+The Application is designed to look for key words to act on, and provide the basic help message for anything else.  The key words are:
 
 * options
   * return a list of the current available options to vote on
 * results
   * list the current status of voting results
-* vote
-  * send a private message to the sender to start a voting session
-  * in the private room typing the name of one of the options will register a vote and end the session
+* vote **Option**
+  * register a vote for the identified option
 
 # Local Development with Vagrant
 **EDIT NEEDED, VAGRANT NOT SETUP YET**
