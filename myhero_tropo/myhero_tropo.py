@@ -22,13 +22,6 @@
     export myhero_tropo_prefix=1419
     export myhero_tropo_url=http://localhost:5000
 
-    export myhero_app_server=http://myhero-app.mantl.browndogtech.com
-    export myhero_app_key=SecureApp
-    export myhero_tropo_secret=DevTropo
-    export myhero_tropo_user=hpreston
-    export myhero_tropo_pass=TXT\!coding
-    export myhero_tropo_prefix=1419
-    export myhero_tropo_url=http://localhost:5000
 
 
 '''
