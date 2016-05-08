@@ -21,6 +21,16 @@
     export myhero_tropo_pass=tropopass
     export myhero_tropo_prefix=1419
     export myhero_tropo_url=http://localhost:5000
+
+    export myhero_app_server=http://myhero-app.mantl.browndogtech.com
+    export myhero_app_key=SecureApp
+    export myhero_tropo_secret=DevTropo
+    export myhero_tropo_user=hpreston
+    export myhero_tropo_pass=TXT\!coding
+    export myhero_tropo_prefix=1419
+    export myhero_tropo_url=http://localhost:5000
+
+
 '''
 
 __author__ = 'hapresto'
@@ -28,6 +38,8 @@ __author__ = 'hapresto'
 # Todo - Convert back to flask "json.dumps(page.json)"
 # Todo - Add in Auth Code for API calls
 # Todo - Setup Local Development Environment Details in README
+# Todo - Add support for multiple phone numbers
+# Todo - Add support for a prefix that isn't supported by Tropo being used, right now big error
 
 # from flask import Flask, request, Response
 import requests, json, re
@@ -197,6 +209,7 @@ def add_number(application, prefix):
 
     tropo_u = tropo_host + "/applications/%s/addresses" % (application["id"])
     page = requests.post(tropo_u, headers = tropo_headers, auth=HTTPBasicAuth(tropo_user, tropo_pass), json=data)
+    print page
     addressurl = page.json()["href"]
 
     page = requests.get(addressurl, headers = tropo_headers, auth=HTTPBasicAuth(tropo_user, tropo_pass))
