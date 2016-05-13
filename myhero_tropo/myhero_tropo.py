@@ -21,13 +21,15 @@
     export myhero_tropo_pass=tropopass
     export myhero_tropo_prefix=1419
     export myhero_tropo_url=http://localhost:5000
+
+
+
 '''
 
 __author__ = 'hapresto'
 
 # Todo - Convert back to flask "json.dumps(page.json)"
-# Todo - Add in Auth Code for API calls
-# Todo - Setup Local Development Environment Details in README
+
 
 # from flask import Flask, request, Response
 import requests, json, re
@@ -92,11 +94,27 @@ def index(request):
 
 @get('/application')
 def display_tropo_application(request):
+    # Verify that the request is propery authorized
+    authz = valid_request_check(request)
+    if not authz[0]:
+        return authz[1]
+
     return json.dumps(demoapp)
 
 @get('/application/number')
 def display_tropo_application_number(request):
-    return json.dumps(demoappnumber)
+    # Verify that the request is propery authorized
+    authz = valid_request_check(request)
+    if not authz[0]:
+        return authz[1]
+
+    addresses = get_application_addresses(demoapp)
+    numbers = []
+    for address in addresses:
+        if address["type"] == "number":
+            numbers.append(address["number"])
+    return json.dumps(numbers)
+    # return json.dumps(demoappnumber)
 
 # Utilities to interact with the MyHero-App Server
 def get_results():
@@ -197,11 +215,64 @@ def add_number(application, prefix):
 
     tropo_u = tropo_host + "/applications/%s/addresses" % (application["id"])
     page = requests.post(tropo_u, headers = tropo_headers, auth=HTTPBasicAuth(tropo_user, tropo_pass), json=data)
-    addressurl = page.json()["href"]
+    if page.status_code == 200:
+        # Success
+        # print page
+        addressurl = page.json()["href"]
+        page = requests.get(addressurl, headers = tropo_headers, auth=HTTPBasicAuth(tropo_user, tropo_pass))
+        address = page.json()
+        return address
+    else:
+        return "Error: Failed to add number to application"
 
-    page = requests.get(addressurl, headers = tropo_headers, auth=HTTPBasicAuth(tropo_user, tropo_pass))
-    address = page.json()
-    return address
+def get_exchanges():
+    # Example Exchange
+    # {u'amountNumbersToOrder': 25,
+    #  u'areaCode': u'443',
+    #  u'city': u'Aberdeen',
+    #  u'country': u'United States',
+    #  u'countryDialingCode': u'1',
+    #  u'description': u'',
+    #  u'href': u'https://api.tropo.com/rest/v1/exchanges/2142',
+    #  u'id': 2142,
+    #  u'minNumbersInExchange': 10,
+    #  u'prefix': u'1443',
+    #  u'requiresVerification': False,
+    #  u'state': u'MD',
+    #  u'tollFree': False}
+    tropo_u = tropo_host + "/exchanges"
+    page = requests.get(tropo_u, headers = tropo_headers, auth=HTTPBasicAuth(tropo_user, tropo_pass))
+    exchanges = page.json()
+    return exchanges
+
+def get_available_numbers(exchange):
+    # Example Exchange
+    #  {u'city': u'Aberdeen',
+    # u'country': u'United States',
+    # u'displayNumber': u'+1 443-863-7082',
+    # u'href': u'https://api.tropo.com/rest/v1/addresses/number/+14438637082',
+    # u'number': u'+14438637082',
+    # u'prefix': u'1443',
+    # u'smsEnabled': True,
+    # u'state': u'MD',
+    # u'subscriber': False,
+    # u'type': u'number'}
+    tropo_u = tropo_host + "/addresses?available=true&type=NUMBER&prefix=%s" % (exchange)
+    page = requests.get(tropo_u, headers = tropo_headers, auth=HTTPBasicAuth(tropo_user, tropo_pass))
+    numbers = page.json()
+    sms_numbers = []
+    for number in numbers:
+        if number["smsEnabled"]:
+            sms_numbers.append(number)
+    return sms_numbers
+
+def test_exchange(exchange):
+    exchanges = get_available_numbers(exchange)
+    if len(exchanges) > 0:
+        return True
+    else:
+        return False
+
 
 # Standard Utility
 def valid_request_check(request):
@@ -308,7 +379,8 @@ if __name__ == '__main__':
         if (tropo_pass == None):
             get_tropo_pass = raw_input("What is the Tropo Password? ")
             tropo_pass = get_tropo_pass
-    sys.stderr.write("Tropo Pass: " + tropo_pass + "\n")
+    # sys.stderr.write("Tropo Pass: " + tropo_pass + "\n")
+    sys.stderr.write("Tropo Pass: REDACTED\n")
 
     tropo_url = args.tropourl
     if (tropo_url == None):
@@ -329,6 +401,7 @@ if __name__ == '__main__':
 
     demoappid = ""
     demoapp = {}
+    demoappnumbers = []
     demoappnumber = ""
     demoappprefix = ""
 
@@ -352,18 +425,29 @@ if __name__ == '__main__':
 
     addresses = get_application_addresses(demoapp)
     for address in addresses:
-        if address["type"] == "number" and address["prefix"] == tropo_prefix:
-            # pprint("Found Address")
-            demoappnumber = address["number"]
-            demoappprefix = address["prefix"]
+        if address["type"] == "number":
+            demoappnumbers.append(address["number"])
+            if address["prefix"] == tropo_prefix:
+                # pprint("Found Address")
+                demoappnumber = address["number"]
+                demoappprefix = address["prefix"]
 
     if demoappnumber == "":
-        pprint ("Creating Tropo Number")
-        address = add_number(demoapp, tropo_prefix)
-        demoappnumber = address["number"]
-        demoappprefix = address["prefix"]
+        if test_exchange(tropo_prefix):
+            pprint ("Creating Tropo Number")
+            address = add_number(demoapp, tropo_prefix)
+            demoappnumber = address["number"]
+            demoappprefix = address["prefix"]
+            demoappnumbers.append(demoappnumber)
+        else:
+            sys.stderr.write("Error: No numbers available for prefix %s.\n" % (tropo_prefix))
 
-    pprint("Tropo Number: " + demoappnumber)
+    sys.stderr.write("Tropo Number: " + ", ".join(demoappnumbers) + "\n")
 
-    # app.run(debug=True, host='0.0.0.0', port=int("5000"))
-    run_itty(server='wsgiref', host='0.0.0.0', port=5000)
+    # Only run if there is a number available
+    if len(demoappnumbers) > 0:
+        # app.run(debug=True, host='0.0.0.0', port=int("5000"))
+        run_itty(server='wsgiref', host='0.0.0.0', port=5000)
+    else:
+        sys.stderr.write("Can't start Tropo Service, no numbers deployed to application.\n")
+

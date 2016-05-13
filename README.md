@@ -1,5 +1,3 @@
-**In development, not ready for use yet**
-
 # MyHero Tropo WebAPI Interface
 
 This is a Tropo WebAPI for a basic microservice demo application.
@@ -118,23 +116,38 @@ The Application is designed to look for key words to act on, and provide the bas
   * register a vote for the identified option
 
 # Local Development with Vagrant
-**EDIT NEEDED, VAGRANT NOT SETUP YET**
 
 I've included the configuration files needed to do local development with Vagrant in the repo.  Vagrant will still use Docker for local development and is configured to spin up a CentOS7 host VM for running the container.
 
-Before running `vagrant up` you will need to finish the Vagrant file configuration by adding the Spark Account Email and Token to the environment variables used by the container.  To do this:
+Before running `vagrant up` you will need to finish the Vagrant file configuration by adding the Tropo Username and Password to the environment variables used by the container.  You will also need to change the URL that the Tropo service will be available at when in production.  You can optionally change the prefix that the myHero_tropo service will use to create a number for the application.
+
+To do this:
 
 * Make a copy of Vagrantfile.sample to use
   * `cp Vagrantfile.sample Vagrantfile`
 * Edit `Vagrantfile` and add your details where indicated
   * `vim Vagrantfile`
-  * Change the value for `myherospark_bot_email` and `spark_token` in the `docker.env` hash
+  * Change the values for
+    * `"myhero_tropo_user" => "TROPOUSER",`
+    * `"myhero_tropo_pass" => "TROPOPASSWORD",`
+    * `"myhero_tropo_prefix" => "1408",`
+    * `"myhero_tropo_url" => "http://myhero-tropo.TRAEFIKDOMAIN",`
 
 To start local development run:
 * `vagrant up`
   - You may need to run this twice.  The first time to start the docker host, and the second to start the container.
-* Now you can interact with the API or interface at localhost:15001 (configured in Vagrantfile and Vagrantfile.host)
-  - example:  from your local machine `curl -H "key: DevBot" http://localhost:15003/demoroom/members`
+* Now you can interact with the API or interface at localhost:15005 (configured in Vagrantfile and Vagrantfile.host)
+  - example:  from your local machine `curl -H "key: DevTropo" http://localhost:15005/application/numbers` to return the list of phone numbers available for this applciation
   - Environment Variables are configured in Vagrantfile for development
+
+Tropo makes building and developing applications very straightforward, but there is a couple of aspects of the nature of the service that add a little extra complexity.  For this service, I opted to use the WebAPI to build an independent Microservice rather than let Tropo host the application code and use their ScriptingAPI.  In this model, the Tropo Cloud Service sends a REST API call to the registered "messagingUrl" for the application.  This URL needs to be accessible from the public internet hosted Tropo cloud.  This is typically not practical for a development laptop and a workaround is needed.
+
+One way to get started is to leverage [Requestb.in](http://requestb.in), which is a free service that will provide you a publicly available URL to use during testing of APIs as a target for POSTs from services like Tropo.  You can then retrieve the POST data from the web site, and use CURL on your local machine to POST to the service running locally to see the output of your function.  A command like this would work:
+
+` curl -X POST -H "key: DevTropo" localhost:15005/ -d @tropo_request_sample.json`
+
+The downside to this is that the response and action don't make it back to Tropo where it can send messages back to users.
+
+More detailed suggestions on developing services like this are beyond the scope of this README.
 
 Each of the services in the application (i.e. myhero_web, myhero_app, and myhero_data) include Vagrant support to allow working locally on all three simultaneously.
