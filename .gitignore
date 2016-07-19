@@ -2,3 +2,4 @@
 .vagrant/
 myhero.py
 Vagrantfile
+drone-secrets.yml
