@@ -55,9 +55,9 @@ def index(request):
     t = Tropo()
 
     # s = Session(request.get_json(force=True))
+    sys.stderr.write(str(request.body) + "\n")
+
     s = Session(request.body)
-    sys.stderr.write(str(s))
-    sys.stderr.write("\n")
     message = s.initialText
     # print("Initial Text: " + initialText)
 
