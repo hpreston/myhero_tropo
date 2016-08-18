@@ -56,7 +56,7 @@ def index(request):
 
     # s = Session(request.get_json(force=True))
     s = Session(request.body)
-    sys.stderr.write(s)
+    sys.stderr.write(str(s))
     sys.stderr.write("\n")
     message = s.initialText
     # print("Initial Text: " + initialText)
