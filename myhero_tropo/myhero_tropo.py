@@ -63,7 +63,11 @@ def index(request):
 
     # Check if message contains word "results" and if so send results
     if not message:
+        number = s["session"]["parameters"]["numberToDial"]
         reply = "Would you like to vote?"
+        t.call(to=number, network="SMS")
+        # t.say(reply)
+
     elif message.lower().find("results") > -1:
         results = get_results()
         reply = ["The current standings are"]
