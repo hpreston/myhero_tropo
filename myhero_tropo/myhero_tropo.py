@@ -56,12 +56,15 @@ def index(request):
 
     # s = Session(request.get_json(force=True))
     s = Session(request.body)
+    sys.stderr.write(s)
+    sys.stderr.write("\n")
     message = s.initialText
     # print("Initial Text: " + initialText)
 
-
     # Check if message contains word "results" and if so send results
-    if message.lower().find("results") > -1:
+    if not message:
+        reply = "Would you like to vote?"
+    elif message.lower().find("results") > -1:
         results = get_results()
         reply = ["The current standings are"]
         for result in results:
@@ -123,7 +126,9 @@ def send_hello(request, number):
     message = "Hello, would you like to vote?"
     t.call(to="+" + number, network="SMS")
     t.say(message)
-    return t.RenderJson()
+
+    data = t.RenderJson()
+    tropo_u = tropo_host + "/sessions"
 
 
 # Utilities to interact with the MyHero-App Server
