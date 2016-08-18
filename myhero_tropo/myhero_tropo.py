@@ -126,7 +126,7 @@ def send_hello(request, number):
     sys.stderr.write("Sending hello to: " + number + "\n")
     message = "Hello, would you like to vote?"
 
-    u = tropo_host + "sessions?action=create&token=%s&numberToDial=%s&msg=%s" % (demoappmessagetoken, number, message)
+    u = tropo_host + "/sessions?action=create&token=%s&numberToDial=%s&msg=%s" % (demoappmessagetoken, number, message)
     page = requests.get(u)
     result= page.json
     return result
