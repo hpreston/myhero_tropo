@@ -63,7 +63,8 @@ def index(request):
 
     # Check if message contains word "results" and if so send results
     if not message:
-        number = s["session"]["parameters"]["numberToDial"]
+        # number = s["session"]["parameters"]["numberToDial"]
+        number = s.parameters["numberToDial"]
         reply = "Would you like to vote?"
         t.call(to=number, network="SMS")
         # t.say(reply)
