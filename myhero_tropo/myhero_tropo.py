@@ -118,8 +118,10 @@ def display_tropo_application_number(request):
 
 @get('/hello/(?P<number>\w+)')
 def send_hello(request, number):
+    print("Sending hello to: " + number)
     t = Tropo()
     message = "Hello, would you like to vote?"
+    t.call(to="+" + number, network="SMS")
     t.say(message)
     return t.RenderJson()
 
