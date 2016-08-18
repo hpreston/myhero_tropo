@@ -234,6 +234,27 @@ def add_number(application, prefix):
     else:
         return "Error: Failed to add number to application"
 
+def add_token(application, type="messaging"):
+    data = {
+    "type":"token",
+    "channel": type
+    }
+
+    tropo_u = tropo_host + "/applications/%s/addresses" % (application["id"])
+    page = requests.post(tropo_u, headers = tropo_headers, auth=HTTPBasicAuth(tropo_user, tropo_pass), json=data)
+
+    # {"href":"https://api.tropo.com/v1/applications/123456/addresses/token/12345679f90bac47a05b178c37d3c68aaf38d5bdbc5aba0c7abb12345d8a9fd13f1234c1234567dbe2c6f63b"}
+    if page.status_code == 200:
+        # Success
+        # print page
+        addressurl = page.json()["href"]
+        page = requests.get(addressurl, headers = tropo_headers, auth=HTTPBasicAuth(tropo_user, tropo_pass))
+        address = page.json()
+        return address
+    else:
+        return "Error: Failed to add number to application"
+
+
 def get_exchanges():
     # Example Exchange
     # {u'amountNumbersToOrder': 25,
@@ -413,6 +434,7 @@ if __name__ == '__main__':
     demoappnumbers = []
     demoappnumber = ""
     demoappprefix = ""
+    demoappmessagetoken = ""
 
     for app in tropo_applications:
         if app["name"] == "myherodemo":
@@ -440,6 +462,14 @@ if __name__ == '__main__':
                 # pprint("Found Address")
                 demoappnumber = address["number"]
                 demoappprefix = address["prefix"]
+        if address["type"] == "token" and address["channel"] == "messaging":
+            demoappmessagetoken = address["token"]
+
+    if demoappmessagetoken == "":
+        pprint("Creating a Token")
+        token = add_token(demoapp)
+        demoappmessagetoken = token["token"]
+        pprint("Token is: " + demoappmessagetoken)
 
     if demoappnumber == "":
         if test_exchange(tropo_prefix):
