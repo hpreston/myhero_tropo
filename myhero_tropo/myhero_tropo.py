@@ -93,7 +93,9 @@ def index(request):
 
     # t.say(["Really, it's that easy." + message])
     t.say(reply)
-    return t.RenderJson()
+    response = t.RenderJson()
+    sys.stderr.write(response + "\n")
+    return response
 
 @get('/application')
 def display_tropo_application(request):
@@ -121,14 +123,13 @@ def display_tropo_application_number(request):
 
 @get('/hello/(?P<number>\w+)')
 def send_hello(request, number):
-    print("Sending hello to: " + number)
-    t = Tropo()
+    sys.stderr.write("Sending hello to: " + number + "\n")
     message = "Hello, would you like to vote?"
-    t.call(to="+" + number, network="SMS")
-    t.say(message)
 
-    data = t.RenderJson()
-    tropo_u = tropo_host + "/sessions"
+    u = tropo_host + "sessions?action=create&token=%s&numberToDial=%s&msg=%s" % (demoappmessagetoken, number, message)
+    page = requests.get(u)
+    result= page.json
+    return result
 
 
 # Utilities to interact with the MyHero-App Server
