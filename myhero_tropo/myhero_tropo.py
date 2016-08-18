@@ -116,6 +116,14 @@ def display_tropo_application_number(request):
     return json.dumps(numbers)
     # return json.dumps(demoappnumber)
 
+@get('/hello/(?P<number>\w+)')
+def send_hello(request, number):
+    t = Tropo()
+    message = "Hello, would you like to vote?"
+    t.say(message)
+    return t.RenderJson()
+
+
 # Utilities to interact with the MyHero-App Server
 def get_results():
     u = app_server + "/v2/results"
