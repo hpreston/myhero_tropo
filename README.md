@@ -4,14 +4,17 @@ This is a Tropo WebAPI for a basic microservice demo application.
 This provides an interactive text and voice service for a voting system where users can vote for their favorite movie superhero.
 
 Details on deploying the entire demo to a Mantl cluster can be found at
+
 * MyHero Demo - [hpreston/myhero_demo](https://github.com/hpreston/myhero_demo)
 
 The application was designed to provide a simple demo for Cisco Mantl.  It is written as a simple Python Flask application and deployed as a docker container.
 
 Other services are:
+
 * Data - [hpreston/myhero_data](https://github.com/hpreston/myhero_data)
 * App - [hpreston/myhero_app](https://github.com/hpreston/myhero_app)
 * Web - [hpreston/myhero_web](https://github.com/hpreston/myhero_web)
+* UI - [hpreston/myhero_ui](https://github.com/hpreston/myhero_ui)
 * Ernst - [hpreston/myhero_ernst](https://github.com/hpreston/myhero_ernst)
   * Optional Service used along with an MQTT server when App is in "queue" mode
 * Spark Bot - [hpreston/myhero_spark](https://github.com/hpreston/myhero_spark)
@@ -21,9 +24,11 @@ Other services are:
 
 
 The docker containers are available at
+
 * Data - [hpreston/myhero_data](https://hub.docker.com/r/hpreston/myhero_data)
 * App - [hpreston/myhero_app](https://hub.docker.com/r/hpreston/myhero_app)
 * Web - [hpreston/myhero_web](https://hub.docker.com/r/hpreston/myhero_web)
+* UI - [hpreston/myhero_ui](https://hub.docker.com/r/hpreston/myhero_ui)
 * Ernst - [hpreston/myhero_ernst](https://hub.docker.com/r/hpreston/myhero_ernst)
   * Optional Service used along with an MQTT server when App is in "queue" mode
 * Spark Bot - [hpreston/myhero_spark](https://hub.docker.com/r/hpreston/myhero_spark)
@@ -61,6 +66,7 @@ Required
 # Basic Usage
 
 In order to run, the service needs several pieces of information to be provided:
+
 * App Server Address
 * App Server Authentication Key to Use
 * Secret Key to require for local API Calls
@@ -70,6 +76,7 @@ In order to run, the service needs several pieces of information to be provided:
 * Tropo Service URL
 
 These details can be provided in one of three ways.
+
 * As a command line argument
   - `python myhero_tropo/myhero_tropo.py --app "http://myhero-app.server.com" --appkey "APP AUTH KEY" --secret "TROPO KEY" --tropouser "tuser" --tropopassword "tpass" --tropoprefix "1419" --tropourl "http://localhost:5000" `
 * As environment variables
@@ -103,6 +110,7 @@ A command line argument overrides an environment variable, and raw input is only
 The Tropo Application is a very simple interface that is designed to make it intuitive to use.  Once in the room, simply say "hello", "help" (or anything else) to have the bot reply back with some instructions on how to access the features.
 
 Start by sending a TXT (SMS) message to the phone number assigned to the application.
+
 * This number can be found in the Tropo Web Portal or with this command
   * `curl -H "key: SecureTropo" http://myhero-tropo.$MANTL_DOMAIN/application/number`
 
@@ -114,6 +122,23 @@ The Application is designed to look for key words to act on, and provide the bas
   * list the current status of voting results
 * vote **Option**
   * register a vote for the identified option
+
+## REST APIs
+
+# /
+
+The main service API is at the root of the applciation and is what is used by the Tropo Application.  
+
+# /hello/:phonenumber 
+
+There is an API call that can be leveraged to have the Tropo Bot initiate an SMS session with a user.  This API responds to GET requests and then will send a SMS message to the phone number provided.  
+
+Example usage
+
+```
+curl http://myhero-tropo.domain.local/hello/5551234567
+```
+
 
 # Local Development with Vagrant
 
