@@ -134,7 +134,8 @@ def send_hello(request, number):
     u = tropo_host + "/sessions?action=create&token=%s&numberToDial=%s&msg=%s" % (demoappmessagetoken, number, message)
     page = requests.get(u)
     result= page.json
-    return json.dumps(result)
+    sys.stderr.write(json.dumps(result) + "\n")
+    # return json.dumps(result)
 
 
 # Utilities to interact with the MyHero-App Server
