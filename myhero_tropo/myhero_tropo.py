@@ -133,9 +133,15 @@ def send_hello(request, number):
 
     u = tropo_host + "/sessions?action=create&token=%s&numberToDial=%s&msg=%s" % (demoappmessagetoken, number, message)
     page = requests.get(u, headers=tropo_headers)
-    result= page.json()
-    sys.stderr.write(json.dumps(result) + "\n")
-    return json.dumps(result)
+    # ToDo - For some reason the returned page isn't decoding properly.  Not needed to work, fix later
+    # result= page.json()
+    # sys.stderr.write(json.dumps(result) + "\n")
+
+    headers = [
+        ('Access-Control-Allow-Origin', '*')
+    ]
+    response = Response('Message sent to ' + number, headers=headers)
+    return response
 
 
 # Utilities to interact with the MyHero-App Server
