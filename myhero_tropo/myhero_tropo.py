@@ -55,13 +55,21 @@ def index(request):
     t = Tropo()
 
     # s = Session(request.get_json(force=True))
+    sys.stderr.write(str(request.body) + "\n")
+
     s = Session(request.body)
     message = s.initialText
     # print("Initial Text: " + initialText)
 
-
     # Check if message contains word "results" and if so send results
-    if message.lower().find("results") > -1:
+    if not message:
+        # number = s["session"]["parameters"]["numberToDial"]
+        number = s.parameters["numberToDial"]
+        reply = "Would you like to vote?"
+        t.call(to=number, network="SMS")
+        # t.say(reply)
+
+    elif message.lower().find("results") > -1:
         results = get_results()
         reply = ["The current standings are"]
         for result in results:
@@ -90,7 +98,9 @@ def index(request):
 
     # t.say(["Really, it's that easy." + message])
     t.say(reply)
-    return t.RenderJson()
+    response = t.RenderJson()
+    sys.stderr.write(response + "\n")
+    return response
 
 @get('/application')
 def display_tropo_application(request):
@@ -115,6 +125,24 @@ def display_tropo_application_number(request):
             numbers.append(address["number"])
     return json.dumps(numbers)
     # return json.dumps(demoappnumber)
+
+@get('/hello/(?P<number>\w+)')
+def send_hello(request, number):
+    sys.stderr.write("Sending hello to: " + number + "\n")
+    message = "Hello, would you like to vote?"
+
+    u = tropo_host + "/sessions?action=create&token=%s&numberToDial=%s&msg=%s" % (demoappmessagetoken, number, message)
+    page = requests.get(u, headers=tropo_headers)
+    # ToDo - For some reason the returned page isn't decoding properly.  Not needed to work, fix later
+    # result= page.json()
+    # sys.stderr.write(json.dumps(result) + "\n")
+
+    headers = [
+        ('Access-Control-Allow-Origin', '*')
+    ]
+    response = Response('Message sent to ' + number, headers=headers)
+    return response
+
 
 # Utilities to interact with the MyHero-App Server
 def get_results():
@@ -223,6 +251,27 @@ def add_number(application, prefix):
         return address
     else:
         return "Error: Failed to add number to application"
+
+def add_token(application, type="messaging"):
+    data = {
+    "type":"token",
+    "channel": type
+    }
+
+    tropo_u = tropo_host + "/applications/%s/addresses" % (application["id"])
+    page = requests.post(tropo_u, headers = tropo_headers, auth=HTTPBasicAuth(tropo_user, tropo_pass), json=data)
+
+    # {"href":"https://api.tropo.com/v1/applications/123456/addresses/token/12345679f90bac47a05b178c37d3c68aaf38d5bdbc5aba0c7abb12345d8a9fd13f1234c1234567dbe2c6f63b"}
+    if page.status_code == 200:
+        # Success
+        # print page
+        addressurl = page.json()["href"]
+        page = requests.get(addressurl, headers = tropo_headers, auth=HTTPBasicAuth(tropo_user, tropo_pass))
+        address = page.json()
+        return address
+    else:
+        return "Error: Failed to add number to application"
+
 
 def get_exchanges():
     # Example Exchange
@@ -403,6 +452,7 @@ if __name__ == '__main__':
     demoappnumbers = []
     demoappnumber = ""
     demoappprefix = ""
+    demoappmessagetoken = ""
 
     for app in tropo_applications:
         if app["name"] == "myherodemo":
@@ -430,6 +480,14 @@ if __name__ == '__main__':
                 # pprint("Found Address")
                 demoappnumber = address["number"]
                 demoappprefix = address["prefix"]
+        if address["type"] == "token" and address["channel"] == "messaging":
+            demoappmessagetoken = address["token"]
+
+    if demoappmessagetoken == "":
+        pprint("Creating a Token")
+        token = add_token(demoapp)
+        demoappmessagetoken = token["token"]
+        pprint("Token is: " + demoappmessagetoken)
 
     if demoappnumber == "":
         if test_exchange(tropo_prefix):
