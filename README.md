@@ -139,6 +139,27 @@ Example usage
 curl http://myhero-tropo.domain.local/hello/5551234567
 ```
 
+# /health 
+
+This is an API call that can be used to test if the Tropo Bot service is functioning properly.
+  
+```
+curl -v http://myhero-tropo.domain.local/health 
+
+*   Trying...
+* Connected to myhero-tropo.domain.local (x.x.x.x)
+> GET /health HTTP/1.1
+> Host: myhero-tropo.domain.local
+> User-Agent: curl/7.43.0
+> Accept: */*
+> 
+* HTTP 1.0, assume close after body
+< HTTP/1.0 200 OK
+< Connection: close
+< 
+* Closing connection 0
+Service up. 
+```
 
 # Local Development with Vagrant
 
