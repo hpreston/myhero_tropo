@@ -350,6 +350,7 @@ def valid_request_check(request):
 
 
 
+
 if __name__ == '__main__':
     from argparse import ArgumentParser
     import os, sys
@@ -455,7 +456,7 @@ if __name__ == '__main__':
     # If exists, verify has correct url and a number in the correct prefix
     tropo_applications = get_applications()
 
-    demoappname = "myherodemo " + tropo_url[len("http://"):u.find("-tropo")+len("-tropo")]
+    demoappname = "myherodemo " + tropo_url[len("http://"):tropo_url.find("-tropo")+len("-tropo")]
     demoappid = ""
     demoapp = {}
     demoappnumbers = []
@@ -516,4 +517,3 @@ if __name__ == '__main__':
         run_itty(server='wsgiref', host='0.0.0.0', port=5000)
     else:
         sys.stderr.write("Can't start Tropo Service, no numbers deployed to application.\n")
-
