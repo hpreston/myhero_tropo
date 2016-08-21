@@ -475,7 +475,7 @@ if __name__ == '__main__':
 
     if demoappid == "":
         pprint("Creating Tropo App")
-        demoapp = create_application("myherodemo", tropo_url)
+        demoapp = create_application(demoappname, tropo_url)
         demoappid = demoapp["id"]
         # pprint(demoapp)
 
