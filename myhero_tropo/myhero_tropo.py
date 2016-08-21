@@ -143,6 +143,14 @@ def send_hello(request, number):
     response = Response('Message sent to ' + number, headers=headers)
     return response
 
+@get('/health')
+def health_check(request):
+    headers = [
+        ('Access-Control-Allow-Origin', '*')
+    ]
+    response = Response('Service Up.', headers=headers)
+    return response
+
 
 # Utilities to interact with the MyHero-App Server
 def get_results():
