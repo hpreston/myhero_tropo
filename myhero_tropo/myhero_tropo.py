@@ -447,6 +447,7 @@ if __name__ == '__main__':
     # If exists, verify has correct url and a number in the correct prefix
     tropo_applications = get_applications()
 
+    demoappname = "myherodemo " + tropo_url[len("http://"):u.find("-tropo")+len("-tropo")]
     demoappid = ""
     demoapp = {}
     demoappnumbers = []
@@ -455,7 +456,7 @@ if __name__ == '__main__':
     demoappmessagetoken = ""
 
     for app in tropo_applications:
-        if app["name"] == "myherodemo":
+        if app["name"] == demoappname:
             # pprint("Found Demo App")
             demoappid = app["id"]
             demoapp = app
