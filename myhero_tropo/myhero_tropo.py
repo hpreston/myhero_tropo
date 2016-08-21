@@ -143,6 +143,14 @@ def send_hello(request, number):
     response = Response('Message sent to ' + number, headers=headers)
     return response
 
+@get('/health')
+def health_check(request):
+    headers = [
+        ('Access-Control-Allow-Origin', '*')
+    ]
+    response = Response('Service Up.', headers=headers)
+    return response
+
 
 # Utilities to interact with the MyHero-App Server
 def get_results():
@@ -342,6 +350,7 @@ def valid_request_check(request):
 
 
 
+
 if __name__ == '__main__':
     from argparse import ArgumentParser
     import os, sys
@@ -447,6 +456,7 @@ if __name__ == '__main__':
     # If exists, verify has correct url and a number in the correct prefix
     tropo_applications = get_applications()
 
+    demoappname = "myherodemo " + tropo_url[len("http://"):tropo_url.find("-tropo")+len("-tropo")]
     demoappid = ""
     demoapp = {}
     demoappnumbers = []
@@ -455,7 +465,7 @@ if __name__ == '__main__':
     demoappmessagetoken = ""
 
     for app in tropo_applications:
-        if app["name"] == "myherodemo":
+        if app["name"] == demoappname:
             # pprint("Found Demo App")
             demoappid = app["id"]
             demoapp = app
@@ -465,7 +475,7 @@ if __name__ == '__main__':
 
     if demoappid == "":
         pprint("Creating Tropo App")
-        demoapp = create_application("myherodemo", tropo_url)
+        demoapp = create_application(demoappname, tropo_url)
         demoappid = demoapp["id"]
         # pprint(demoapp)
 
@@ -507,4 +517,3 @@ if __name__ == '__main__':
         run_itty(server='wsgiref', host='0.0.0.0', port=5000)
     else:
         sys.stderr.write("Can't start Tropo Service, no numbers deployed to application.\n")
-
