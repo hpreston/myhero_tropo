@@ -83,7 +83,10 @@ def index(request):
         options = get_options()
         reply = ["The options are..."]
         for option in options:
-            reply.append("  - %s \n" % (option))
+            message += "%s, " % (option)
+            # reply.append("  - %s \n" % (option))
+        message = message[:-2] + ""
+        reply.append(message)
     # Check if message contains word "vote" and if so start a voting session
     elif message.lower().find("vote") > -1:
         # reply = "Let's vote!  Look for a new message from me so you can place a secure vote!"
