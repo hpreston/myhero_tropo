@@ -71,7 +71,6 @@ def index(request):
 
     elif message.lower().find("results") > -1:
         results = get_results()
-        # message += "* " + result[0] + " has " + str(round(result[2])) + "% of the votes.\n"
         reply = ["The current standings are"]
         for i, result in enumerate(results):
             if i == 0:
@@ -82,11 +81,11 @@ def index(request):
     elif message.lower().find("options") > -1:
         options = get_options()
         reply = ["The options are..."]
+        msg = ""
         for option in options:
-            message += "%s, " % (option)
-            # reply.append("  - %s \n" % (option))
-        message = message[:-2] + ""
-        reply.append(message)
+            msg += "%s, " % (option)
+        msg = msg[:-2] + ""
+        reply.append(msg)
     # Check if message contains word "vote" and if so start a voting session
     elif message.lower().find("vote") > -1:
         # reply = "Let's vote!  Look for a new message from me so you can place a secure vote!"
