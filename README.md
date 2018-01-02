@@ -163,7 +163,10 @@ Service up.
 
 # Local Development with Vagrant
 
-I've included the configuration files needed to do local development with Vagrant in the repo.  Vagrant will still use Docker for local development and is configured to spin up a CentOS7 host VM for running the container.
+I've included the configuration files needed to do local development with Vagrant in the repo.  Vagrant will still use Docker for local development and requires the following be installed on your laptop: 
+
+* [Vagrant 2.0.1 or higher](https://www.vagrantup.com/downloads.html)
+* [Docker](https://www.docker.com/community-edition)
 
 Before running `vagrant up` you will need to finish the Vagrant file configuration by adding the Tropo Username and Password to the environment variables used by the container.  You will also need to change the URL that the Tropo service will be available at when in production.  You can optionally change the prefix that the myHero_tropo service will use to create a number for the application.
 
@@ -177,13 +180,12 @@ To do this:
     * `"myhero_tropo_user" => "TROPOUSER",`
     * `"myhero_tropo_pass" => "TROPOPASSWORD",`
     * `"myhero_tropo_prefix" => "1408",`
-    * `"myhero_tropo_url" => "http://myhero-tropo.TRAEFIKDOMAIN",`
+    * `"myhero_tropo_url" => "<ENTER NGROK URL>",`
 
 To start local development run:
 * `vagrant up`
-  - You may need to run this twice.  The first time to start the docker host, and the second to start the container.
-* Now you can interact with the API or interface at localhost:15005 (configured in Vagrantfile and Vagrantfile.host)
-  - example:  from your local machine `curl -H "key: DevTropo" http://localhost:15005/application/numbers` to return the list of phone numbers available for this applciation
+* Now you can interact with the API or interface at localhost:15005 (configured in Vagrantfile)
+  - example:  from your local machine `curl -H "key: DevTropo" http://localhost:15005/application/numbers` to return the list of phone numbers available for this application
   - Environment Variables are configured in Vagrantfile for development
 
 Tropo makes building and developing applications very straightforward, but there is a couple of aspects of the nature of the service that add a little extra complexity.  For this service, I opted to use the WebAPI to build an independent Microservice rather than let Tropo host the application code and use their ScriptingAPI.  In this model, the Tropo Cloud Service sends a REST API call to the registered "messagingUrl" for the application.  This URL needs to be accessible from the public internet hosted Tropo cloud.  This is typically not practical for a development laptop and a workaround is needed.
